@@ -4,7 +4,7 @@ import io.jsonwebtoken.Claims;
 
 /**
  * 通用常量信息
- * 
+ *
  * @author ruoyi
  */
 public class Constants
@@ -133,6 +133,13 @@ public class Constants
      * 资源映射路径 前缀
      */
     public static final String RESOURCE_PREFIX = "/profile";
+
+    //用户数据目录
+    public static final String USER_DATA = "/www/admin/www.cloudpp.top_80/wwwroot/";
+    //公共落地页数据目录
+    public static final String PUBLIC_DATA = "/www/admin/cloudpp.top_80/wwwroot/";
+    //用户数据模板目录
+    public static final String TEST_USER = "/test/.";
 
     /**
      * RMI 远程方法调用

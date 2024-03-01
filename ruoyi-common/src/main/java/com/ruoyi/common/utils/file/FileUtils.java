@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 
 /**
  * 文件处理工具类
- * 
+ *
  * @author ruoyi
  */
 public class FileUtils
@@ -30,7 +30,7 @@ public class FileUtils
 
     /**
      * 输出指定文件的byte数组
-     * 
+     *
      * @param filePath 文件路径
      * @param os 输出流
      * @return
@@ -105,7 +105,7 @@ public class FileUtils
 
     /**
      * 删除文件
-     * 
+     *
      * @param filePath 文件
      * @return
      */
@@ -123,7 +123,7 @@ public class FileUtils
 
     /**
      * 文件名称验证
-     * 
+     *
      * @param filename 文件名称
      * @return true 正常 false 非法
      */
@@ -134,7 +134,7 @@ public class FileUtils
 
     /**
      * 检查文件是否可下载
-     * 
+     *
      * @param resource 需要下载的文件
      * @return true 正常 false 非法
      */
@@ -158,7 +158,7 @@ public class FileUtils
 
     /**
      * 下载文件名重新编码
-     * 
+     *
      * @param request 请求对象
      * @param fileName 文件名
      * @return 编码后的文件名
@@ -228,7 +228,7 @@ public class FileUtils
 
     /**
      * 获取图像后缀
-     * 
+     *
      * @param photoByte 图像数据
      * @return 后缀名
      */
@@ -257,25 +257,32 @@ public class FileUtils
 
     /**
      * 获取文件名称 /profile/upload/2022/04/16/ruoyi.png -- ruoyi.png
-     * 
+     *
      * @param fileName 路径名称
      * @return 没有文件路径的名称
      */
+    // 定义一个公共的静态方法，返回一个字符串类型的值
     public static String getName(String fileName)
     {
+        // 如果传入的文件名为空，直接返回空值
         if (fileName == null)
         {
             return null;
         }
+        // 获取文件名中最后一个 Unix 风格的分隔符（/）的位置
         int lastUnixPos = fileName.lastIndexOf('/');
+        // 获取文件名中最后一个 Windows 风格的分隔符（\\）的位置
         int lastWindowsPos = fileName.lastIndexOf('\\');
+        // 取两个位置中较大的一个，作为文件名的开始位置
         int index = Math.max(lastUnixPos, lastWindowsPos);
+        // 从文件名的开始位置加一（跳过分隔符）到文件名的末尾，截取一个子字符串，作为文件的名称
         return fileName.substring(index + 1);
     }
 
+
     /**
      * 获取不带后缀文件名称 /profile/upload/2022/04/16/ruoyi.png -- ruoyi
-     * 
+     *
      * @param fileName 路径名称
      * @return 没有文件路径和后缀的名称
      */
