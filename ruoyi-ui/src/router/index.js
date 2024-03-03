@@ -106,6 +106,19 @@ export const dynamicRoutes = [
       }
     ]
   },
+  // 落地页代理
+  {
+    path: '/landpage/landpage',
+    component: Layout,
+    hidden: true,
+    children: [
+      {
+        component: () => import('@/views/landpage/page'),
+        name: 'landpage',
+        meta: { title: '瀑布流落地页' }
+      }
+    ]
+  },
   {
     path: '/system/role-auth',
     component: Layout,
@@ -162,6 +175,7 @@ export const dynamicRoutes = [
       }
     ]
   }
+
 ]
 
 // 防止连续点击多次路由报错
