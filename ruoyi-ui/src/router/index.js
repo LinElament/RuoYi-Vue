@@ -108,7 +108,7 @@ export const dynamicRoutes = [
   },
   // 落地页代理
   {
-    path: '/landpage/landpage',
+    path: '/landpage/pagelist',
     component: Layout,
     hidden: true,
     children: [

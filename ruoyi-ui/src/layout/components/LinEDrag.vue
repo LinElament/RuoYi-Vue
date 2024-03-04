@@ -1,37 +1,51 @@
 <template>
-    <div ref="floatBall" class="floating-ball" :class="{ 'is-open': isOpen, 'is-dragging': isDragging }"
-        @mousedown="startDrag" @touchstart="startDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
-        <transition name="fade">
-            <div class="form-container" v-if="isOpen">
-                <!-- 表单内容 -->
+    <div ref="floatBall" class="floating-ball" @click="toggleForm"
+        :class="{ 'is-dragging': isDragging, 'is-loading': isLoading, 'is-expanded': isOpen }" @mousedown="startDrag"
+        @touchstart="startDrag" @mouseup="endDrag" @touchend="endDrag" @mouseleave="endDrag">
+        <transition name="fade" mode="out-in">
+            <div class="form-container" v-if="isOpen" key="form" @click.stop>
                 <form @submit.prevent="submitForm">
-                    <!-- 表单元素 -->
+                    <input type="text" v-model="url" placeholder="Enter URL here" :disabled="isLoading" @click.stop
+                        style="margin-bottom: 20px;" @input="checkURL()">
+                    <button type="submit" :disabled="isLoading || !isValidURL">Submit</button>
                 </form>
             </div>
+            <div v-else key="content">
+                <!-- 悬浮球内容 -->
+            </div>
         </transition>
-        <div class="ripple" v-if="!isOpen">
-            <div class="ripple-wave" v-for="index in 3" :key="index"></div>
-        </div>
     </div>
 </template>
   
 <script>
+import { addpage } from "@/api/landpage/data"
 export default {
     data() {
         return {
             isOpen: false,
             isDragging: false,
+            isLoading: false,
+            isValidURL: false,
             startX: 0,
             startY: 0,
+            url: '',
             translateX: 0,
             translateY: 0,
             lastPosition: JSON.parse(localStorage.getItem('floatBallPosition')) || { x: 0, y: 0 }
         };
     },
     mounted() {
-        this.restorePosition();
+        this.updatePosition();
     },
     methods: {
+        checkURL() {
+            const pattern = new RegExp('^(https?|ftp|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]$'); // fragment locator
+            this.isValidURL = pattern.test(this.url);
+        },
+        toggleForm() {
+            this.isOpen = !this.isOpen;
+            this.updatePosition();
+        },
         toggle() {
             this.isOpen = !this.isOpen;
             if (!this.isOpen) {
@@ -47,11 +61,24 @@ export default {
             document.addEventListener('touchmove', this.dragging, { passive: false });
         },
         dragging(event) {
-            if (!this.isDragging) return;
             event.preventDefault();
-            event = event.type.includes('touch') ? event.touches[0] : event;
-            this.translateX = event.clientX - this.startX;
-            this.translateY = event.clientY - this.startY;
+            if (!this.isDragging) return;
+            // 获取鼠标位置或触摸位置
+            let clientX = event.type.includes('touch') ? event.touches[0].clientX : event.clientX;
+            let clientY = event.type.includes('touch') ? event.touches[0].clientY : event.clientY;
+            // 计算新位置
+            let newX = clientX - this.startX;
+            let newY = clientY - this.startY;
+            // 获取悬浮球尺寸和网页尺寸
+            let ballRect = this.$refs.floatBall.getBoundingClientRect();
+            let pageWidth = document.documentElement.clientWidth;
+            let pageHeight = document.documentElement.clientHeight;
+            // 确保悬浮球不会被拖动出网页可视区域
+            newX = Math.max(0, Math.min(newX, pageWidth - ballRect.width));
+            newY = Math.max(0, Math.min(newY, pageHeight - ballRect.height));
+            // 更新悬浮球位置
+            this.translateX = newX;
+            this.translateY = newY;
             this.updatePosition();
         },
         endDrag() {
@@ -63,6 +90,15 @@ export default {
             this.savePosition();
         },
         updatePosition() {
+            // 确保悬浮球在视口内
+            const ballWidth = this.$refs.floatBall.offsetWidth;
+            const ballHeight = this.$refs.floatBall.offsetHeight;
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+
+            this.translateX = Math.min(screenWidth - ballWidth, this.translateX);
+            this.translateY = Math.min(screenHeight - ballHeight, this.translateY);
+
             this.$refs.floatBall.style.transform = `translate(${this.translateX}px, ${this.translateY}px)`;
         },
         savePosition() {
@@ -74,29 +110,69 @@ export default {
             this.translateY = savedPosition.y;
             this.updatePosition();
         },
-        submitForm() {
-            // 处理表单提交逻辑
+        async submitForm() {
+            this.$modal.msg("正在下载落地页，请等待加载完成");
+            this.isLoading = true;
+            this.isOpen = !this.isOpen;
+            console.log(this.url);
+            const res = await addpage(this.url)
+                .then(() => {
+                    this.$modal.msg("落地页添加成功");
+                    this.isLoading = false;
+                });
         }
     }
-};
+}
 </script>
   
 <style scoped>
 .floating-ball {
+    /* 悬浮球样式 */
     position: fixed;
     bottom: 20px;
     right: 20px;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #333;
-    cursor: pointer;
+    z-index: 1000;
     transition: transform 0.3s ease;
-    overflow: hidden;
+    border-radius: 50%;
+    background: conic-gradient(red, orange, yellow, green, blue, indigo, violet);
+    /* 示例颜色 */
+    width: 50px;
+    /* 初始大小 */
+    height: 50px;
+    /* 初始大小 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    cursor: pointer;
+}
+
+.form-container {
+    /* 表单容器样式 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: auto;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+}
+
+.floating-ball.is-expanded {
+    transform: scale(4);
+    /* 假设原始大小为50px，scale(4)将使其变为200px */
+    width: 200px;
+    /* 扩大后的大小 */
+    height: 200px;
+    /* 扩大后的大小 */
 }
 
 .floating-ball.is-open .form-container {
     display: block;
+}
+
+.is-loading {
+    /* 加载动画样式 */
+    animation: spin 1s linear infinite;
 }
 
 .floating-ball.is-dragging {
@@ -143,6 +219,21 @@ export default {
 
 .ripple-wave::after {
     animation-delay: 1s;
+}
+
+.loading-message {
+    /* 提示信息样式 */
+    margin-top: 10px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 @keyframes ripple-animation {

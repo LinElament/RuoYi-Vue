@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.ruoyi.common.constant.Constants.*;
+
 import static com.ruoyi.common.constant.Constants.*;
 
 /**
@@ -33,12 +35,15 @@ public class LandPageUtils {
      * @return 返回用户此次增加的落地链接
      */
     public String downloadWebsite(String url) {
+        System.out.println("\n\n\n" + url + "\n\n\n");
         String savePath = createUniqueDirectory(PUBLIC_DATA, "");
         String command = "wget -P " + savePath + " -c -r -e robots=off -nv -p -k " + url; // 构建wget命令
         System.out.println(shellCommandExecutor(command));
-        String commandImg = "wget https://urlscan.io/liveshot/?width=240&height=" + new int[]{480, 900, 600}[new Random().nextInt(3)] + "&url=" + "https://www.baidu.com/" + " -O " + savePath + "/saved_image.jpg";
+        String commandImg = "wget https://urlscan.io/liveshot/?width=240&height=" + new int[]{480, 900, 600}[new Random().nextInt(3)] + "&url=" + url + " -O " + savePath + "/saved_image.jpg";
         System.out.println(shellCommandExecutor(commandImg));
-        return scanFolder(savePath, null).get(0);
+        String downloadUrl = scanFolder(savePath, null).get(0);
+
+        return downloadUrl;
     }
 
     /**
@@ -149,19 +154,12 @@ public class LandPageUtils {
                     .filter(Files::isRegularFile)
                     // 过滤出文件名为 index.html 的文件路径
                     .filter(path -> path.getFileName().toString().equals("index.html"))
-                    // 如果 username 为空或文件名包含 username，则返回 true
-                    .filter(path -> username.isEmpty() || path.getFileName().toString().contains(username))
-                    // 排除包含 'error' 的文件路径
-                    .filter(path -> !path.toString().contains("error"))
-                    // 排除包含 'localhost' 的文件路径
-                    .filter(path -> !path.toString().contains("localhost"))
+                    // 如果 username 不为空，则过滤出包含 username 的路径，否则返回所有路径
+                    .filter(path -> username == null || username.isEmpty() || path.getFileName().toString().contains(username))
+                    // 排除包含 'error' 和 'localhost' 的文件路径
+                    .filter(path -> !path.toString().contains("error") && !path.toString().contains("localhost"))
                     // 将文件路径转换为 URL 形式
-                    .map(path -> "https:/" + path.toString()
-                            .replace("/www/admin", "") // 移除路径中的 '/www/admin'
-                            .replace("/index.html", "") // 移除路径中的 '/index.html'
-                            .replace("_80", "") // 移除路径中的 '_80'
-                            .replace("/wwwroot", "") // 移除路径中的 '/wwwroot'
-                            .replace(File.separator, "/")) // 将文件分隔符替换为 '/'
+                    .map(LandPageUtils::convertToUrl)
                     // 收集流处理的结果到一个列表中
                     .collect(Collectors.toList());
         } catch (IOException e) {
@@ -172,6 +170,13 @@ public class LandPageUtils {
         }
     }
 
+    private static String convertToUrl(Path path) {
+        return "https:/" + path.toString().replace("/www/admin", "") // 移除路径中的 '/www/admin'
+                .replace("/index.html", "") // 移除路径中的 '/index.html'
+                .replace("_80", "") // 移除路径中的 '_80'
+                .replace("/wwwroot", "") // 移除路径中的 '/wwwroot'
+                .replace(File.separator, "/"); // 将文件分隔符替换为 '/'
+    }
 
     /**
      * 设置目录权限为777

@@ -2,10 +2,19 @@ import request from '@/utils/request'
 import { parseStrEmpty } from "@/utils/ruoyi";
 
 // 查询用户列表
-export function getlist() {
+export function getlist(username) {
   return request({
-    url: '/land_page/list',
+    url: '/land_page/list/' + parseStrEmpty(username),
     method: 'get',
+  })
+}
+
+// 增加落地页
+export function addpage(data) {
+  return request({
+    url: '/land_page/add_page',
+    method: 'post',
+    data: parseStrEmpty(data)
   })
 }
 

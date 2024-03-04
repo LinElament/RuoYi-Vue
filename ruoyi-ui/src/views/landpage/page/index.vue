@@ -34,7 +34,8 @@ export default {
       if (this.isFetching || this.noMoreData) return
       this.isFetching = true
       try {
-        const res = await getlist({ group: this.group })
+        const res = await getlist(null, { group: this.group })
+        console.log(res)
         if (res.data.length) {
           this.imgsArr = [...this.imgsArr, ...res.data]
           this.group++
