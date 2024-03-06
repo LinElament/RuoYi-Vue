@@ -29,19 +29,44 @@ public class LandPageController {
     private LandPageUtils landPageUtils;
 
     /**
-     * 查询 落地页或者用户配置
+     * 查询 落地页
      *
      * @return src 图片 href 地址
      */
-    @Log(title = "查询&落地页或者用户配置", businessType = BusinessType.OTHER)
-    @GetMapping(value = {"/list", "/{username}"})
-    public AjaxResult pageList(@PathVariable(value = "username", required = false) String username) {
+    @Log(title = "落地页页面", businessType = BusinessType.OTHER)
+    @GetMapping("/list")
+    public AjaxResult pageList() {
         JSONArray jsonArray = new JSONArray();
         AjaxResult ajax;
-        for (String href : landPageUtils.scanFolder(PUBLIC_DATA, username)) {
+        for (String href : landPageUtils.scanFolderHtml(PUBLIC_DATA, null, true)) {
             ajax = new AjaxResult();
-            ajax.put("src", href + "/saved_image.jpg");
+            ajax.put("src", href.substring(0, 81) + "/saved_image.jpg");
             ajax.put("href", href);
+            jsonArray.add(ajax);
+        }
+        return AjaxResult.success(jsonArray);
+    }
+
+
+    /**
+     * 用户配置页
+     *
+     * @param name 需要下载的落地页链接
+     * @return 返回本系统新增落地页链接
+     */
+    @Log(title = "查看用户配置页面", businessType = BusinessType.OTHER)
+    @PostMapping("/config")
+    public AjaxResult configList(@Validated @RequestBody String name) {
+        JSONArray jsonArray = new JSONArray();
+        AjaxResult ajax;
+        System.out.println("\n\n\n" + name + "\n\n\n");
+        for (String href : landPageUtils.scanFolderHtml(USER_DATA, name, true)) {
+            ajax = new AjaxResult();
+            ajax.put("href", href);
+            ajax.put("landLink", href.substring(0, 81) + "/config.json");
+            ajax.put("link", href.substring(0, 81) + "/config.json");
+            ajax.put("area", href.substring(0, 81) + "/config.json");
+            ajax.put("xid", href.substring(0, 81) + "/config.json");
             jsonArray.add(ajax);
         }
         return AjaxResult.success(jsonArray);
