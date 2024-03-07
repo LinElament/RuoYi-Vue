@@ -45,3 +45,11 @@ export function deleteConfig(data) {
   })
 }
 
+// 修改用户配置页面
+export function updateConfig(data) {
+  return request({
+    url: '/land_page/update_config',
+    method: 'post',
+    data: data
+  })
+}

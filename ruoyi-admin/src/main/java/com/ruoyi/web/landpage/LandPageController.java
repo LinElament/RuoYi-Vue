@@ -113,9 +113,11 @@ public class LandPageController {
      */
     @Log(title = "删除用户配置", businessType = BusinessType.OTHER)
     @PostMapping("/delete_config")
-    public AjaxResult DConfig(@Validated @RequestBody String file) {
+    public AjaxResult DConfig(@Validated @RequestBody List<String> file) {
         try {
-            FileUtils.deleteFile(file);
+            for (String filePath : file) {
+                FileUtils.deleteFile(filePath);
+            }
             return AjaxResult.success();
         } catch (Exception e) {
             return AjaxResult.error();
