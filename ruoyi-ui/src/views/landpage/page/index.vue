@@ -3,7 +3,7 @@
     <vue-waterfall-easy ref="waterfall" :imgsArr="imgsArr" @scrollReachBottom="getData" @click="clickFn"
       @imgError="imgErrorFn">
       <div class="img-info" slot-scope="props">
-        <p class="some-info">第{{ props.index + 1 }}落地页</p>
+        <!-- <p class="some-info">第{{ props.index + 1 }}落地页</p> -->
         <p class="some-info">{{ props.value.info }}</p>
         <img :src="props.value.img" @load="imgLoaded" @error="imgErrorFn" class="img-wraper" />
       </div>
@@ -34,8 +34,7 @@ export default {
       if (this.isFetching || this.noMoreData) return
       this.isFetching = true
       try {
-        const res = await getlist(null, { group: this.group })
-        console.log(res)
+        const res = await getlist({ group: this.group })
         if (res.data.length) {
           this.imgsArr = [...this.imgsArr, ...res.data]
           this.group++
@@ -64,7 +63,7 @@ export default {
         event.target.src = 'https://api.btstu.cn/sjbz/api.php'; // 替换为你的默认图片路径
       } else {
         // 记录错误或处理事件目标不符合预期的情况
-        console.error('Error: event target is not an image element, event is not defined, or element is not in DOM.');
+        console.log('Error: event target is not an image element, event is not defined, or element is not in DOM.');
       }
     },
   },

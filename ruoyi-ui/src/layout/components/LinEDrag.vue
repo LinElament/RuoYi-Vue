@@ -115,9 +115,13 @@ export default {
             this.isLoading = true;
             this.isOpen = !this.isOpen;
             console.log(this.url);
-            const res = await addpage(this.url)
-                .then(() => {
-                    this.$modal.msg("落地页添加成功");
+            await addpage(this.url)
+                .then(response => {
+                    if (response.code == 200) {
+                        this.$modal.msgSuccess(response.msg);
+                    } else {
+                        this.$modal.msgError("错误反馈");
+                    }
                     this.isLoading = false;
                 });
         }

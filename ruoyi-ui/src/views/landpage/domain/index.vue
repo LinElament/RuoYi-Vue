@@ -27,32 +27,36 @@
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
-        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
-          v-hasPermi="['system:role:add']">新增</el-button>
+        <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd">新增</el-button>
+        <!-- v-hasPermi="['system:role:add']" -->
       </el-col>
       <el-col :span="1.5">
-        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
-          v-hasPermi="['system:role:edit']">修改</el-button>
+        <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single"
+          @click="handleUpdate">修改</el-button>
+        <!-- v-hasPermi="['system:role:edit']" -->
       </el-col>
       <el-col :span="1.5">
-        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete"
-          v-hasPermi="['system:role:remove']">删除</el-button>
+        <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
+          @click="handleDelete">删除</el-button>
+        <!-- v-hasPermi="['system:role:remove']" -->
       </el-col>
-      <el-col :span="1.5">
+      <!-- <el-col :span="1.5">
         <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
           v-hasPermi="['system:role:export']">导出</el-button>
-      </el-col>
+      </el-col> -->
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>
     </el-row>
 
-    <el-table v-loading="loading" :data="configPage">
-      <!-- @selection-change="handleSelectionChange" -->
+    <el-table v-loading="loading" :data="configPageList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="用户链接" prop="src" width="120" />
-      <el-table-column label="落地页地址" prop="href" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="落地页跳转地址" prop="roleKey" :show-overflow-tooltip="true" width="150" />
-      <el-table-column label="地区" prop="roleSort" width="100" />
-      <el-table-column label="像素" prop="roleSort" width="100" />
+      <el-table-column prop="file" v-if="false" />
+      <el-table-column label="用户链接" prop="href" width="820" :show-overflow-tooltip="true" />
+      <el-table-column label="落地页地址" prop="targetLink" width="820" :show-overflow-tooltip="true" />
+      <el-table-column label="落地页跳转地址" prop="link" width="420" :formatter="formatWhitelist" />
+      <el-table-column label="白名单IP" prop="whitelist" width="130" :formatter="formatWhitelist" />
+      <el-table-column label="地区" prop="targetCountry" width="45" />
+      <el-table-column label="像素" prop="xid" width="140" />
+      <el-table-column label="备注" prop="lament" width="320" />
       <!-- <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"
@@ -66,10 +70,10 @@
       </el-table-column> -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope" v-if="scope.row.roleId !== 1">
-          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
-            v-hasPermi="['system:role:edit']">修改</el-button>
-          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
-            v-hasPermi="['system:role:remove']">删除</el-button>
+          <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)">修改</el-button>
+          <!-- v-hasPermi="['system:role:edit']" -->
+          <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)">删除</el-button>
+          <!-- v-hasPermi="['system:role:remove']" -->
           <!-- <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
             v-hasPermi="['system:role:edit']">
             <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
@@ -84,10 +88,10 @@
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
-      @pagination="getList" />
+    <!-- <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
+      @pagination="getList" /> -->
 
-    <!-- 用户配置添加修改页 -->
+    <!-- 用户配置修改页 -->
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
@@ -130,7 +134,7 @@
     </el-dialog>
 
     <!-- 分配角色数据权限对话框 -->
-    <el-dialog :title="title" :visible.sync="openDataScope" width="500px" append-to-body>
+    <!-- <el-dialog :title="title" :visible.sync="openDataScope" width="500px" append-to-body>
       <el-form :model="form" label-width="80px">
         <el-form-item label="角色名称">
           <el-input v-model="form.roleName" :disabled="true" />
@@ -157,14 +161,14 @@
         <el-button type="primary" @click="submitDataScope">确 定</el-button>
         <el-button @click="cancelDataScope">取 消</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
 import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
-import { configPage } from "@/api/landpage/data";
+import { configPage, addconfig, deleteConfig } from "@/api/landpage/data";
 import { getUserProfile } from "@/api/system/user";
 export default {
   name: "Role",
@@ -186,7 +190,7 @@ export default {
       // 总条数
       total: 0,
       // 用户配置页面默认数据
-      configPage: [],
+      configPageList: [],
       // 弹出层标题
       title: "",
       // 是否显示弹出层
@@ -258,12 +262,17 @@ export default {
     this.getList();
   },
   methods: {
+    formatWhitelist(row, column, cellValue) {
+      // cellValue 是一个数组，将其转换为用逗号分隔的字符串
+      return cellValue.join("; ");
+    }
+    ,
     /** 查询列表 */
     getList() {
       this.loading = true;
       getUserProfile().then(response => {
         configPage(response.data.userName).then(response => {
-          this.configPage = response.data;
+          this.configPageList = response.data;
           this.total = response.data.length;
           this.loading = false;
         }
@@ -365,23 +374,23 @@ export default {
     },
     // 多选框选中数据
     handleSelectionChange(selection) {
-      this.ids = selection.map(item => item.roleId)
+      this.ids = selection.map(item => item.file)
       this.single = selection.length != 1
       this.multiple = !selection.length
     },
     // 更多操作触发
-    handleCommand(command, row) {
-      switch (command) {
-        case "handleDataScope":
-          this.handleDataScope(row);
-          break;
-        case "handleAuthUser":
-          this.handleAuthUser(row);
-          break;
-        default:
-          break;
-      }
-    },
+    // handleCommand(command, row) {
+    //   switch (command) {
+    //     case "handleDataScope":
+    //       this.handleDataScope(row);
+    //       break;
+    //     case "handleAuthUser":
+    //       this.handleAuthUser(row);
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // },
     // 树权限（展开/折叠）
     handleCheckedTreeExpand(value, type) {
       if (type == 'menu') {
@@ -413,17 +422,30 @@ export default {
       }
     },
     /** 新增按钮操作 */
-    handleAdd() {
-      this.reset();
-      this.getMenuTreeselect();
-      this.open = true;
-      this.title = "添加用户配置页";
+    async handleAdd() {
+      // this.reset();
+      // this.getMenuTreeselect();
+      // this.open = true;
+      // this.title = "添加用户配置页";
+      this.loading = true;
+      await getUserProfile().then(response => {
+        addconfig(response.data.userName).then(response => {
+          if (response.code == 200) {
+            this.$modal.msgSuccess("添加成功");
+          } else {
+            this.$modal.msgError("错误反馈");
+          }
+          this.getList();
+          this.loading = false;
+        }
+        );
+      });
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
-      const roleId = row.roleId || this.ids
-      const roleMenu = this.getRoleMenuTreeselect(roleId);
+      const roleId = row.file || this.ids[0]
+      // const roleMenu = this.getRoleMenuTreeselect(roleId);
       getRole(roleId).then(response => {
         this.form = response.data;
         this.open = true;
@@ -501,9 +523,9 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const roleIds = row.roleId || this.ids;
-      this.$modal.confirm('是否确认删除角色编号为"' + roleIds + '"的数据项？').then(function () {
-        return delRole(roleIds);
+      const roleIds = row.file || this.ids[0];
+      this.$modal.confirm('是否确认删除此配置页?').then(function () {
+        return deleteConfig(roleIds);
       }).then(() => {
         this.getList();
         this.$modal.msgSuccess("删除成功");

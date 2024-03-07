@@ -138,7 +138,7 @@ public class Constants {
     //公共落地页数据目录
     public static final String PUBLIC_DATA = "/www/admin/cloudpp.top_80/wwwroot/";
     //用户数据模板目录
-    public static final String TEST_USER = "/UserConfigLinkModel/.";
+    public static final String TEST_USER = "/www/admin/UserConfigLinkModel/.";
 
     /**
      * RMI 远程方法调用
