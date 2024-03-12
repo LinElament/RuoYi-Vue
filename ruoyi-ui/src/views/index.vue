@@ -1,6 +1,8 @@
 <template>
   <div class="app-container home">
-    <el-row :gutter="20">
+    <!-- <iframe src="http://dash.teamt.top:24332/C68A20#/datascreen/detail" frameborder="1" width="100%" height="100%"
+      scrolling="no"></iframe> -->
+    <!-- <el-row :gutter="20">
       <el-col :sm="24" :lg="24">
         <blockquote class="text-warning" style="font-size: 14px">
           领取阿里云通用云产品1888优惠券
@@ -968,18 +970,23 @@
             <span>捐赠支持</span>
           </div>
           <div class="body">
-            <!-- <img
+             <img
               src="@/assets/images/pay.png"
               alt="donate"
               width="100%"
-            /> -->
+            /> 
             <span style="display: inline-block; height: 30px; line-height: 30px"
               >你可以请作者喝杯咖啡表示鼓励</span
             >
           </div>
         </el-card>
       </el-col>
-    </el-row>
+    </el-row> -->
+
+    <div>
+      <iframe src="https://app.lihi.io/admin/login?_gl=1*14guj6a*_gcl_au*MzA1NzA1NDczLjE3MDg5NTQ0ODk." frameborder="0"
+        style="min-height: 1200px;height: auto; min-width: 1600px;width: auto;" scrolling="no"></iframe>
+    </div>
   </div>
 </template>
 
@@ -992,11 +999,11 @@ export default {
       version: "3.8.7"
     };
   },
-  methods: {
-    goTarget(href) {
-      window.open(href, "_blank");
-    }
-  }
+  // methods: {
+  //   goTarget(href) {
+  //     window.open(href, "_blank");
+  //   }
+  // }
 };
 </script>
 
@@ -1008,12 +1015,14 @@ export default {
     font-size: 17.5px;
     border-left: 5px solid #eee;
   }
+
   hr {
     margin-top: 20px;
     margin-bottom: 20px;
     border: 0;
     border-top: 1px solid #eee;
   }
+
   .col-item {
     margin-bottom: 20px;
   }
@@ -1023,7 +1032,11 @@ export default {
     margin: 0;
   }
 
-  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "open sans",
+  "Helvetica Neue",
+  Helvetica,
+  Arial,
+  sans-serif;
   font-size: 13px;
   color: #676a6c;
   overflow-x: hidden;

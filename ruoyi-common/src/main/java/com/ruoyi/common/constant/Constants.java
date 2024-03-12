@@ -134,11 +134,11 @@ public class Constants {
     public static final String RESOURCE_PREFIX = "/profile";
 
     //用户数据目录
-    public static final String USER_DATA = "/www/admin/www.cloudpp.top_80/wwwroot/";
+    public static final String USER_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/teamt.top/index";
     //公共落地页数据目录
-    public static final String PUBLIC_DATA = "/www/admin/cloudpp.top_80/wwwroot/";
+    public static final String PUBLIC_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/www.teamt.top/index";
     //用户数据模板目录
-    public static final String TEST_USER = "/www/admin/UserConfigLinkModel/.";
+    public static final String TEST_USER = "/opt/1panel/apps/openresty/openresty/www/sites/UserConfigLinkModel/.";
 
     /**
      * RMI 远程方法调用

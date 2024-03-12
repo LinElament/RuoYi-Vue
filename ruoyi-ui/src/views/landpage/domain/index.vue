@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
+    <!-- <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
       <el-form-item label="角色名称" prop="roleName">
         <el-input v-model="queryParams.roleName" placeholder="请输入角色名称" clearable style="width: 240px"
           @keyup.enter.native="handleQuery" />
@@ -20,10 +20,10 @@
           range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
       </el-form-item>
       <el-form-item>
-        <!-- <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button> -->
+        <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
       </el-form-item>
-    </el-form>
+    </el-form> -->
 
     <el-row :gutter="10" class="mb8">
       <el-col :span="1.5">
@@ -52,11 +52,27 @@
       <el-table-column type="selection" width="55" align="center" />
       <el-table-column prop="file" v-if="false" />
       <el-table-column label="用户链接" prop="href" width="820" :show-overflow-tooltip="true" />
-      <el-table-column label="落地页地址" prop="targetLink" width="820" :show-overflow-tooltip="true" />
-      <el-table-column label="落地页跳转地址" prop="link" width="420" :formatter="formatWhitelist" />
-      <el-table-column label="白名单IP" prop="whitelist" width="130" :formatter="formatWhitelist" />
-      <el-table-column label="地区" prop="targetCountry" width="45" />
-      <el-table-column label="像素" prop="xid" width="140" />
+      <el-table-column label="落地页地址" prop="targetLink" width="1080" :show-overflow-tooltip="true" />
+      <el-table-column label="落地页跳转地址" width="420" prop="link">
+        <template slot-scope="scope">
+          <div v-for="alink in scope.row.link" :key="alink">{{ alink }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column label="白名单IP" prop="whitelist" width="180">
+        <template slot-scope="scope">
+          <div v-for="ip in scope.row.whitelist" :key="ip">{{ ip }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column label="地区" prop="targetCountry" width="85">
+        <template slot-scope="scope">
+          <div v-for="area in scope.row.targetCountry" :key="area">{{ area }}</div>
+        </template>
+      </el-table-column>
+      <el-table-column label="像素" prop="xid" width="140">
+        <template slot-scope="scope">
+          <div v-for="id in scope.row.xid" :key="id">{{ id }}</div>
+        </template>
+      </el-table-column>
       <el-table-column label="备注" prop="lament" width="320" />
       <!-- <el-table-column label="状态" align="center" width="100">
         <template slot-scope="scope">
@@ -92,52 +108,49 @@
     <!-- <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize"
       @pagination="getList" /> -->
 
-    <!-- 用户配置修改页 -->
+    <!-- 用户配置修改页 :rules="rules" -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
+      <el-form ref="form" :model="form" label-width="100px">
         <el-form-item prop="file" v-model="form.file" v-if="false">
         </el-form-item>
+        <el-form-item label="用户地址" prop="href">
+          <el-input v-model="form.href" disabled></el-input>
+        </el-form-item>
         <el-form-item label="落地页地址" prop="targetLink">
-          <el-input v-model="form.targetLink" placeholder="请输入落地页地址" />
+          <el-input v-model="form.targetLink" placeholder="请输入落地页地址"></el-input>
         </el-form-item>
         <el-form-item label="跳转地址" prop="link">
-          <el-input v-model="form.link" placeholder="请输入跳转地址" />
+          <div v-for="(link, index) in form.link" :key="'link-' + index">
+            <el-input type="text" v-model="form.link[index]" placeholder="请输入跳转地址"></el-input>
+            <el-button @click="removeLink(index)">删除</el-button>
+          </div>
+          <el-button @click="addLink">添加跳转地址</el-button>
         </el-form-item>
         <el-form-item label="白名单IP" prop="whitelist">
-          <el-input v-model="form.whitelist" placeholder="请输入白名单IP" />
+          <div v-for="(ip, index) in form.whitelist" :key="'whitelist-' + index">
+            <el-input type="text" v-model="form.whitelist[index]" placeholder="请输入白名单IP"></el-input>
+            <el-button @click="removeWhitelist(index)">删除</el-button>
+          </div>
+          <el-button @click="addWhitelist">添加白名单IP</el-button>
         </el-form-item>
         <el-form-item label="地区" prop="targetCountry">
-          <el-input v-model="form.targetCountry" placeholder="请选择地区" />
+          <el-select v-model="form.targetCountry" multiple placeholder="请选择地区">
+            <el-option label="韩国" value="KR"></el-option>
+            <el-option label="美国" value="US"></el-option>
+            <el-option label="马来西亚" value="MY"></el-option>
+            <el-option label="日本" value="JP"></el-option>
+            <el-option label="印度" value="IN"></el-option>
+
+            <!-- 添加更多选项 -->
+          </el-select>
         </el-form-item>
         <el-form-item label="像素" prop="xid">
-          <el-input v-model="form.xid" placeholder="请输入像素" />
+          <div v-for="(xid, index) in form.xid" :key="'xid-' + index">
+            <el-input type="text" v-model="form.xid[index]" placeholder="请输入像素"></el-input>
+            <el-button @click="removeXid(index)">删除</el-button>
+          </div>
+          <el-button @click="addXid">添加像素</el-button>
         </el-form-item>
-        <!-- <el-form-item prop="roleKey">
-          <span slot="label">
-            <el-tooltip content="控制器中定义的权限字符，如：@PreAuthorize(`@ss.hasRole('admin')`)" placement="top">
-              <i class="el-icon-question"></i>
-            </el-tooltip>
-            权限字符
-          </span>
-          <el-input v-model="form.roleKey" placeholder="请输入权限字符" />
-        </el-form-item> -->
-        <!-- <el-form-item label="角色顺序" prop="roleSort">
-          <el-input-number v-model="form.roleSort" controls-position="right" :min="0" />
-        </el-form-item> -->
-        <!-- <el-form-item label="状态">
-          <el-radio-group v-model="form.status">
-            <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label
-            }}</el-radio>
-          </el-radio-group>
-        </el-form-item> -->
-        <!-- <el-form-item label="菜单权限">
-          <el-checkbox v-model="menuExpand" @change="handleCheckedTreeExpand($event, 'menu')">展开/折叠</el-checkbox>
-          <el-checkbox v-model="menuNodeAll" @change="handleCheckedTreeNodeAll($event, 'menu')">全选/全不选</el-checkbox>
-          <el-checkbox v-model="form.menuCheckStrictly"
-            @change="handleCheckedTreeConnect($event, 'menu')">父子联动</el-checkbox>
-          <el-tree class="tree-border" :data="menuOptions" show-checkbox ref="menu" node-key="id"
-            :check-strictly="!form.menuCheckStrictly" empty-text="加载中，请稍候" :props="defaultProps"></el-tree>
-        </el-form-item> -->
         <el-form-item label="备注">
           <el-input v-model="form.lament" type="textarea" placeholder="请输入内容"></el-input>
         </el-form-item>
@@ -146,6 +159,7 @@
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
+
     </el-dialog>
 
     <!-- 分配角色数据权限对话框 -->
@@ -181,15 +195,20 @@
 </template>
 
 <script>
-import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
-import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
+// import { listRole, getRole, delRole, addRole, updateRole, dataScope, changeRoleStatus, deptTreeSelect } from "@/api/system/role";
+// import { treeselect as menuTreeselect, roleMenuTreeselect } from "@/api/system/menu";
 import { configPage, addconfig, deleteConfig, updateConfig } from "@/api/landpage/data";
 import { getUserProfile } from "@/api/system/user";
 export default {
   name: "Role",
-  dicts: ['sys_normal_disable'],
+  // dicts: ['sys_normal_disable'],
   data() {
     return {
+      // rules: {
+      //   reason: [{ required: true, message: '请填写xxx', trigger: 'blur' }]
+      // },
+      item: '',
+      inputArray: [],
       user: {},
       getusername: "",
       // 遮罩层
@@ -219,28 +238,28 @@ export default {
       // 日期范围
       dateRange: [],
       // 数据范围选项
-      dataScopeOptions: [
-        {
-          value: "1",
-          label: "全部数据权限"
-        },
-        {
-          value: "2",
-          label: "自定数据权限"
-        },
-        {
-          value: "3",
-          label: "本部门数据权限"
-        },
-        {
-          value: "4",
-          label: "本部门及以下数据权限"
-        },
-        {
-          value: "5",
-          label: "仅本人数据权限"
-        }
-      ],
+      // dataScopeOptions: [
+      //   {
+      //     value: "1",
+      //     label: "全部数据权限"
+      //   },
+      //   {
+      //     value: "2",
+      //     label: "自定数据权限"
+      //   },
+      //   {
+      //     value: "3",
+      //     label: "本部门数据权限"
+      //   },
+      //   {
+      //     value: "4",
+      //     label: "本部门及以下数据权限"
+      //   },
+      //   {
+      //     value: "5",
+      //     label: "仅本人数据权限"
+      //   }
+      // ],
       // 菜单列表
       menuOptions: [],
       // 部门列表
@@ -254,39 +273,67 @@ export default {
         status: undefined
       },
       // 表单参数
-      form: {},
+      form: {
+        href: '',
+        targetLink: undefined,
+        link: [],
+        whitelist: [],
+        targetCountry: [],
+        xid: [],
+        lament: undefined,
+      },
       defaultProps: {
         children: "children",
         label: "label"
       },
-      // 表单校验
-      rules: {
-        targetLink: [
-          { required: true, message: "落地页地址不能为空", trigger: "blur" }
-        ],
-        roleKey: [
-          { required: true, message: "权限字符不能为空", trigger: "blur" }
-        ],
-        roleSort: [
-          { required: true, message: "角色顺序不能为空", trigger: "blur" }
-        ]
-      }
+      // // 表单校验
+      // rules: {
+      //   targetLink: [
+      //     { required: true, message: "落地页地址不能为空", trigger: "blur" }
+      //   ],
+      //   roleKey: [
+      //     { required: true, message: "权限字符不能为空", trigger: "blur" }
+      //   ],
+      //   roleSort: [
+      //     { required: true, message: "角色顺序不能为空", trigger: "blur" }
+      //   ]
+      // }
     };
   },
   created() {
     this.getList();
   },
   methods: {
-    formatWhitelist(row, column, cellValue) {
-      // cellValue 是一个数组，将其转换为用逗号分隔的字符串
-      return cellValue.join("; ");
-    }
-    ,
+    addTargetLink() {
+      this.form.targetLink.push('');
+    },
+    removeTargetLink(index) {
+      this.form.targetLink.splice(index, 1);
+    },
+    addLink() {
+      this.form.link.push('');
+    },
+    removeLink(index) {
+      this.form.link.splice(index, 1);
+    },
+    addWhitelist() {
+      this.form.whitelist.push('');
+    },
+    removeWhitelist(index) {
+      this.form.whitelist.splice(index, 1);
+    },
+    addXid() {
+      this.form.xid.push('');
+    },
+    removeXid(index) {
+      this.form.xid.splice(index, 1);
+    },
     /** 查询列表 */
     getList() {
       this.loading = true;
       getUserProfile().then(response => {
         configPage(response.data.userName).then(response => {
+          console.log(response)
           this.configPageList = response.data;
           this.total = response.data.length;
           this.loading = false;
@@ -326,27 +373,28 @@ export default {
     //   });
     // },
     /** 根据角色ID查询部门树结构 */
-    getDeptTree(roleId) {
-      return deptTreeSelect(roleId).then(response => {
-        this.deptOptions = response.depts;
-        return response;
-      });
-    },
-    // 角色状态修改
-    handleStatusChange(row) {
-      let text = row.status === "0" ? "启用" : "停用";
-      this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function () {
-        return changeRoleStatus(row.roleId, row.status);
-      }).then(() => {
-        this.$modal.msgSuccess(text + "成功");
-      }).catch(function () {
-        row.status = row.status === "0" ? "1" : "0";
-      });
-    },
+    // getDeptTree(roleId) {
+    //   return deptTreeSelect(roleId).then(response => {
+    //     this.deptOptions = response.depts;
+    //     return response;
+    //   });
+    // },
+    // // 角色状态修改
+    // handleStatusChange(row) {
+    //   let text = row.status === "0" ? "启用" : "停用";
+    //   this.$modal.confirm('确认要"' + text + '""' + row.roleName + '"角色吗？').then(function () {
+    //     return changeRoleStatus(row.roleId, row.status);
+    //   }).then(() => {
+    //     this.$modal.msgSuccess(text + "成功");
+    //   }).catch(function () {
+    //     row.status = row.status === "0" ? "1" : "0";
+    //   });
+    // },
     // 取消按钮
     cancel() {
       this.open = false;
-      this.reset();
+      // this.reset();
+      this.getList();
     },
     // 取消按钮（数据权限）
     cancelDataScope() {
@@ -363,16 +411,12 @@ export default {
       this.deptExpand = true,
         this.deptNodeAll = false,
         this.form = {
-          roleId: undefined,
-          roleName: undefined,
-          roleKey: undefined,
-          roleSort: 0,
-          status: "0",
-          menuIds: [],
-          deptIds: [],
-          menuCheckStrictly: true,
-          deptCheckStrictly: true,
-          remark: undefined
+          targetLink: undefined,
+          link: [],
+          whitelist: [],
+          targetCountry: [],
+          xid: [],
+          lament: undefined
         };
       this.resetForm("form");
     },
@@ -407,35 +451,35 @@ export default {
     //   }
     // },
     // 树权限（展开/折叠）
-    handleCheckedTreeExpand(value, type) {
-      if (type == 'menu') {
-        let treeList = this.menuOptions;
-        for (let i = 0; i < treeList.length; i++) {
-          this.$refs.menu.store.nodesMap[treeList[i].id].expanded = value;
-        }
-      } else if (type == 'dept') {
-        let treeList = this.deptOptions;
-        for (let i = 0; i < treeList.length; i++) {
-          this.$refs.dept.store.nodesMap[treeList[i].id].expanded = value;
-        }
-      }
-    },
+    // handleCheckedTreeExpand(value, type) {
+    //   if (type == 'menu') {
+    //     let treeList = this.menuOptions;
+    //     for (let i = 0; i < treeList.length; i++) {
+    //       this.$refs.menu.store.nodesMap[treeList[i].id].expanded = value;
+    //     }
+    //   } else if (type == 'dept') {
+    //     let treeList = this.deptOptions;
+    //     for (let i = 0; i < treeList.length; i++) {
+    //       this.$refs.dept.store.nodesMap[treeList[i].id].expanded = value;
+    //     }
+    //   }
+    // },
     // 树权限（全选/全不选）
-    handleCheckedTreeNodeAll(value, type) {
-      if (type == 'menu') {
-        this.$refs.menu.setCheckedNodes(value ? this.menuOptions : []);
-      } else if (type == 'dept') {
-        this.$refs.dept.setCheckedNodes(value ? this.deptOptions : []);
-      }
-    },
-    // 树权限（父子联动）
-    handleCheckedTreeConnect(value, type) {
-      if (type == 'menu') {
-        this.form.menuCheckStrictly = value ? true : false;
-      } else if (type == 'dept') {
-        this.form.deptCheckStrictly = value ? true : false;
-      }
-    },
+    // handleCheckedTreeNodeAll(value, type) {
+    //   if (type == 'menu') {
+    //     this.$refs.menu.setCheckedNodes(value ? this.menuOptions : []);
+    //   } else if (type == 'dept') {
+    //     this.$refs.dept.setCheckedNodes(value ? this.deptOptions : []);
+    //   }
+    // },
+    // // 树权限（父子联动）
+    // handleCheckedTreeConnect(value, type) {
+    //   if (type == 'menu') {
+    //     this.form.menuCheckStrictly = value ? true : false;
+    //   } else if (type == 'dept') {
+    //     this.form.deptCheckStrictly = value ? true : false;
+    //   }
+    // },
     /** 新增按钮操作 */
     async handleAdd() {
       // this.reset();
@@ -459,10 +503,14 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       // this.reset();
-      const roleId = row && this.ids[0];
       // const roleMenu = this.getRoleMenuTreeselect(roleId);
       // updateConfig().then(response => {
-      this.form = roleId;
+      if (Object.keys(row).length == 1) {
+        this.form = this.ids[0];
+      } else {
+        this.form = row;
+      }
+      // this.form = roleId
       this.open = true;
       // this.$nextTick(() => {
       // roleMenu.then(res => {
@@ -506,23 +554,12 @@ export default {
     /** 提交按钮 */
     submitForm: function () {
       this.$refs["form"].validate(valid => {
-        // console.log(valid)
         if (valid) {
-          // if (this.form.roleId != undefined) {
-          //   this.form.menuIds = this.getMenuAllCheckedKeys();
-          //   updateRole(this.form).then(response => {
-          //     this.$modal.msgSuccess("修改成功");
-          //     this.open = false;
-          //     this.getList();
-          //   });
-          // } else {
-          //   this.form.menuIds = this.getMenuAllCheckedKeys();
-          //   addRole(this.form).then(response => {
-          //     this.$modal.msgSuccess("新增成功");
-          //     this.open = false;
-          //     this.getList();
-          //   });
-          // }
+          updateConfig(this.form).then(() => {
+            this.$modal.msgSuccess("修改成功");
+            this.open = false;
+            this.getList();
+          });
         }
       });
     },
@@ -539,7 +576,12 @@ export default {
     // },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const roleIds = Array.of(row.file) && this.ids.map(item => item.file);
+      let roleIds;
+      if (this.ids.map(item => item.file) == 0) {
+        roleIds = Array.of(row.file);
+      } if (Array.of(row.file) == 0) {
+        roleIds = this.ids.map(item => item.file);
+      }
       this.$modal.confirm('是否确认删除此配置页?').then(function () {
         return deleteConfig(roleIds);
       }).then(() => {
