@@ -578,10 +578,11 @@ export default {
     handleDelete(row) {
       let roleIds;
       if (this.ids.map(item => item.file) == 0) {
-        roleIds = Array.of(row.file);
+        roleIds = Array.of(row.file.slice(0, 135));
       } if (Array.of(row.file) == 0) {
-        roleIds = this.ids.map(item => item.file);
+        roleIds = this.ids.map(item => item.file.slice(0, 141));
       }
+      console.log(roleIds)
       this.$modal.confirm('是否确认删除此配置页?').then(function () {
         return deleteConfig(roleIds);
       }).then(() => {

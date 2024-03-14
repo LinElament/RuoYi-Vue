@@ -134,9 +134,9 @@ public class Constants {
     public static final String RESOURCE_PREFIX = "/profile";
 
     //用户数据目录
-    public static final String USER_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/teamt.top/index";
+    public static final String USER_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/www.teamt.top/index/private";
     //公共落地页数据目录
-    public static final String PUBLIC_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/www.teamt.top/index";
+    public static final String PUBLIC_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/www.teamt.top/index/public";
     //用户数据模板目录
     public static final String TEST_USER = "/opt/1panel/apps/openresty/openresty/www/sites/UserConfigLinkModel/.";
 

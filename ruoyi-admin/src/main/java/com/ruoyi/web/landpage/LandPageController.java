@@ -18,7 +18,9 @@ import springfox.documentation.spring.web.json.Json;
 import com.ruoyi.common.utils.file.FileUtils;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.File;
 import java.lang.reflect.Array;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 
@@ -43,10 +45,13 @@ public class LandPageController {
         try {
             JSONArray jsonArray = new JSONArray();
             AjaxResult ajax;
-            for (String href : landPageUtils.scanFolderHtml(PUBLIC_DATA, null, true)) {
+            String url;
+            for (String href : landPageUtils.scanFolderHtml(PUBLIC_DATA, null, false)) {
                 ajax = new AjaxResult();
-                ajax.put("src", href.substring(0, 83) + "/saved_image.jpg");
-                ajax.put("href", href);
+                url = landPageUtils.convertToUrl(Paths.get(href));
+                ajax.put("src", url.substring(0, 90) + "/saved_image.jpg");
+                ajax.put("file", href);
+                ajax.put("href", url);
                 jsonArray.add(ajax);
             }
             return AjaxResult.success(jsonArray);
@@ -137,7 +142,6 @@ public class LandPageController {
         try {
             for (String filePath : file) {
                 FileUtils.deleteFile(filePath);
-                FileUtils.deleteFile(filePath.replaceAll("config.json", "index.html"));
             }
             return AjaxResult.success();
         } catch (Exception e) {
