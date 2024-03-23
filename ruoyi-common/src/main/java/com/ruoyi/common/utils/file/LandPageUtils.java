@@ -40,10 +40,10 @@ public class LandPageUtils {
      */
     public String downloadWebsite(String url) throws IOException {
         String savePath = createUniqueDirectory(PUBLIC_DATA, "");
-        String command = "wget -P " + savePath + " -c -r -e robots=off -nv -p -k " + url; // 构建wget命令
+        String command = "wget -P " + savePath + " -c -r -e robots=off -nv -p -k -nH --cut-dirs=1" + url; // 构建wget命令
         System.out.println(command);
         System.out.println(shellCommandExecutor(command));
-        String commandImg = "wget 'https://urlscan.io/liveshot/?width=240&height=" + new int[]{480, 900, 600, 720}[new Random().nextInt(4)] + "&url=" + url + "' -O " + savePath + "/saved_image.jpg";
+        String commandImg = "wget 'https://urlscan.io/liveshot/?width=240&height=" + new int[]{480, 580, 920, 620, 720, 860}[new Random().nextInt(6)] + "&url=" + url + "' -O " + savePath + "/saved_image.jpg";
         System.out.println(shellCommandExecutor(commandImg));
         System.out.println(commandImg);
         String fileUrl = scanFolderHtml(savePath, null, false).get(0);
@@ -89,8 +89,8 @@ public class LandPageUtils {
     public String createUniqueDirectory(String basePath, String username) {
         // 创建一个安全的随机数生成器
         SecureRandom random = new SecureRandom();
-        // 创建一个长度为36的字节数组
-        byte[] bytes = new byte[36];
+        // 创建一个长度为2的字节数组
+        byte[] bytes = new byte[2];
         // 用随机数生成器填充字节数组
         random.nextBytes(bytes);
         // 使用 Base64 编码器将字节数组转换为一个不带填充的 URL 安全的字符串
@@ -222,7 +222,7 @@ public class LandPageUtils {
             Files.write(path, content.getBytes(charset));
             System.out.println("URL替换完成。");
         } catch (IOException e) {
-            System.err.println("发生错误: " + e.getMessage());
+            System.err.println("下载落地页时修改页面中a标签的href属性发生错误: " + e.getMessage());
             e.printStackTrace();
         } finally {
             close();
@@ -230,7 +230,7 @@ public class LandPageUtils {
     }
 
     /**
-     * 读取 JSON 文件并返回一个 JSONObject
+     * 读取JSON文件并返回一个JSONObject
      *
      * @param filePath 文件路径
      * @return 如果文件路径为正常，返回文件路径下读取的json内容
@@ -243,7 +243,7 @@ public class LandPageUtils {
             // 返回 JSONObject
             return JSON.parseObject(bytes);
         } catch (Exception e) {
-            System.out.println("发生错误: " + e.getMessage());
+            System.out.println("读取JSON文件并返回一个JSONObject发生错误: " + e.getMessage());
             return null;
         } finally {
             close();
@@ -251,7 +251,7 @@ public class LandPageUtils {
     }
 
     /**
-     * 修改 JSONObject 中的指定字段的值
+     * 修改JSONObject中的指定字段的值
      *
      * @param jsonObject 已读取的json内容
      * @param changes    包含要修改的字段名和值的字典
@@ -271,7 +271,7 @@ public class LandPageUtils {
             Files.write(Paths.get(file), jsonObject.toJSONString().getBytes());
             return jsonObject;
         } catch (Exception e) {
-            System.out.println("发生错误: " + e.getMessage());
+            System.out.println("修改JSONObject中的指定字段的值发生错误: " + e.getMessage());
             return null;
         } finally {
             close();

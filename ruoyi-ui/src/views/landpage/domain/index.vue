@@ -120,7 +120,7 @@
           <el-input v-model="form.targetLink" placeholder="请输入落地页地址"></el-input>
         </el-form-item>
         <el-form-item label="跳转地址" prop="link">
-          <div v-for="(link, index) in form.link" :key="'link-' + index">
+          <div v-for="(link, index) in form.link" :key="'link' + index">
             <el-input type="text" v-model="form.link[index]" placeholder="请输入跳转地址"></el-input>
             <el-button @click="removeLink(index)">删除</el-button>
           </div>
@@ -578,7 +578,7 @@ export default {
     handleDelete(row) {
       let roleIds;
       if (this.ids.map(item => item.file) == 0) {
-        roleIds = Array.of(row.file.slice(0, 135));
+        roleIds = Array.of(row.file.slice(0, 141));
       } if (Array.of(row.file) == 0) {
         roleIds = this.ids.map(item => item.file.slice(0, 141));
       }

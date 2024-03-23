@@ -138,7 +138,9 @@ public class Constants {
     //公共落地页数据目录
     public static final String PUBLIC_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/www.teamt.top/index/public";
     //用户数据模板目录
-    public static final String TEST_USER = "/opt/1panel/apps/openresty/openresty/www/sites/UserConfigLinkModel/.";
+    public static final String TEST_USER = "/home/line/UserConfigLinkModel/.";
+    //直鏈域名目錄掃描
+    public static final String DOMAIN_DATA = "/opt/1panel/apps/openresty/openresty/www/sites/";
 
     /**
      * RMI 远程方法调用

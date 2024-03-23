@@ -14,6 +14,33 @@
                 <!-- 悬浮球内容 -->
             </div>
         </transition>
+
+        <!-- 用户配置修改页 :rules="rules" -->
+        <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
+            <el-form-item label="落地页地址" prop="targetLink">
+                <el-input v-model="form.targetLink" placeholder="请输入落地页地址"></el-input>
+            </el-form-item>
+
+            <el-form-item label="域名" prop="domain">
+                <el-select v-model="form.targetCountry" multiple placeholder="请选域名">
+                    <el-option label="韩国" value="KR"></el-option>
+                    <el-option label="美国" value="US"></el-option>
+                    <el-option label="马来西亚" value="MY"></el-option>
+                    <el-option label="日本" value="JP"></el-option>
+                    <el-option label="印度" value="IN"></el-option>
+                    <div v-for="(link, index) in form.domain" :key="'domain' + index">
+                        <el-input type="text" v-model="form.link[index]" placeholder="请输入跳转地址"></el-input>
+                        <el-button @click="removeLink(index)">删除</el-button>
+                    </div>
+                </el-select>
+            </el-form-item>
+
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="submitForm">确 定</el-button>
+                <el-button @click="cancel">取 消</el-button>
+            </div>
+
+        </el-dialog>
     </div>
 </template>
   

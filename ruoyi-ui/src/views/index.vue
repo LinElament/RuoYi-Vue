@@ -984,8 +984,7 @@
     </el-row> -->
 
     <div>
-      <iframe src="https://app.lihi.io/admin/login?_gl=1*14guj6a*_gcl_au*MzA1NzA1NDczLjE3MDg5NTQ0ODk." frameborder="0"
-        style="min-height: 1200px;height: auto; min-width: 1600px;width: auto;" scrolling="no"></iframe>
+      <iframe src="https://ipinfo.io/" frameborder="0" style="width: auto;" scrolling="no"></iframe>
     </div>
   </div>
 </template>

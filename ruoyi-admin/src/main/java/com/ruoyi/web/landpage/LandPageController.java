@@ -49,7 +49,7 @@ public class LandPageController {
             for (String href : landPageUtils.scanFolderHtml(PUBLIC_DATA, null, false)) {
                 ajax = new AjaxResult();
                 url = landPageUtils.convertToUrl(Paths.get(href));
-                ajax.put("src", url.substring(0, 90) + "/saved_image.jpg");
+                ajax.put("src", url + "/saved_image.jpg");
                 ajax.put("file", href);
                 ajax.put("href", url);
                 jsonArray.add(ajax);
@@ -168,6 +168,30 @@ public class LandPageController {
             changes.put("targetLink", UMap.get("targetLink").toString());
             changes.put("lament", UMap.get("lament").toString());
             return AjaxResult.success(landPageUtils.modifyJson(jsonObject, changes, UMap.get("file").toString()));
+        } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+
+    @Log(title = "顯示可以使用的直鏈域名", businessType = BusinessType.OTHER)
+    @PostMapping("/domain_ls")
+    public AjaxResult domainLs(@Validated @RequestBody String name) {
+        try {
+            JSONArray jsonArray = new JSONArray();
+            AjaxResult ajax;
+            JSONObject jsonObject;
+            String file;
+            for (String href : landPageUtils.scanFolderHtml(DOMAIN_DATA, name, false)) {
+                file = href.replaceAll("index.html", "") + "config.json";
+                jsonObject = landPageUtils.readJsonFile(file);
+                ajax = new AjaxResult();
+                ajax.put("file", file);
+                ajax.put("href", landPageUtils.convertToUrl(Paths.get(href)));
+                ajax.put("lament", jsonObject.get("lament"));
+                jsonArray.add(ajax);
+            }
+            return AjaxResult.success(jsonArray);
         } catch (Exception e) {
             return AjaxResult.error(e.getMessage());
         }

@@ -6,9 +6,10 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: jdbc:mysql://202.182.114.24:33663/lament?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+                url: jdbc:mysql://202.182.114.24:33666/ry-vue?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
                 username: lament
                 password: jW78TPQAE2Sipwd7
+
             # 从库数据源
             slave:
                 # 从数据源开关/默认关闭
